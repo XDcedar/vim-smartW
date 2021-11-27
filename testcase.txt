@@ -1,0 +1,6 @@
+l:1,a
+英文字符abc 符号:,# 数字0-9 空格\s
+iskeyword=@,48-57,_,192-255
+啊啊啊aaa啊啊啊bbb0011啊啊啊00ccc
+C:\Users\admin\AppData\Local\nvim\myconfig\keymappings.vim
+D:\Test\keymappings.vim
