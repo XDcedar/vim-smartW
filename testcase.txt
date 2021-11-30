@@ -1,6 +1,43 @@
-l:1,a
-英文字符abc 符号:,# 数字0-9 空格\s
+英文字母abc 符号:,# 数字0-9 多字节字符比如汉字 空格\s
+(以上5种类型相互组合)
+
+abc   :,/:#   01101   啊啊啊    ??
+a : 1 啊 ?
+
+abc::def,,ghij###mmm
+a:b,c#d
+
+abc012def345ghi678
+a0b1c2d3
+
+aaa啊啊啊bbb不不不ccc吃吃吃ddd
+a啊b不c吃d
+
+aa bb cc dd
+a b c d
+
+:;,13423::,,8679;
+,1:9;
+
+,,,中文标点？：，。呃呃？::嗯嗯??
+,中？呃:嗯：哦！!啊
+
+:;,   ::/,    ;
+/ : ;
+
+111啊啊啊222不不不333吃吃吃444
+1啊2不3吃4
+
+111   222      333  444
+1 2 3 4
+
+啊啊啊   不不不   吃吃吃    
+ 啊 不 吃    
+(上下几行末尾都有纯空格，用于确定w在句尾空格处的行为)
+      
+
 iskeyword=@,48-57,_,192-255
-啊啊啊aaa啊啊啊bbb0011啊啊啊00ccc
 C:\Users\admin\AppData\Local\nvim\myconfig\keymappings.vim
-D:\Test\keymappings.vim
+if l:endidx = len(l:line) | normal! w | endif
+let l:expr = l:expr_prefix.'\v\K{-1,}(\K)@!.(\K|\s)'
+echo matchend(getline('.'), '\%>'.max([col('.')-len(expand('<cword>')), 0]).'c'.expand('<cword>'))
