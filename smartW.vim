@@ -56,37 +56,53 @@
 " endfunc
 
 function! s:SkipSingleCharacter(originalMapping) abort
-  " TODO
-  " 注意如果光标在符号上，则expand('<cword>')返回的是光标右侧的第一个word。要处理这种情况。
   let l:line = getline('.')
   let l:col = col('.')
+  let l:currentchar = matchstr(l:line, '\%'.l:col.'c.') " see https://stackoverflow.com/questions/23323747/
+  " 如果光标在符号上，则expand('<cword>')返回的是光标所在行内右侧的首个word。要先筛掉这种情况。
+  echo "currentchar: ".l:currentchar
+  " 光标在空白字符上，则触发普通w
+  if l:currentchar =~# '\s'
+    normal! w
+    return
+  endif
+  " 光标不在空白字符上但也不是keyword，触发普通w
+  if l:currentchar !~# '\k'
+    normal! w
+    return
+  endif
   let l:cword = expand('<cword>') " see :help expand()
+  echo "cword: ".l:cword
   " 搜索位置为光标所在位置左移一个<cword>长度，这样光标即使在word的正中间，使用 \%>c 也能匹配光标所在word。
   " 简单证明可知不必担心光标左移太多（比如aaa.aaa匹配到了左边那个aaa，或者诸如abababab的长回文匹配到了某个子串）
   let l:searchidx = max([l:col-len(l:cword), 0])
-  let l:expr = '\%>'.l:searchidx.'c'.l:cword " \%>23c表a示从第23列往后开始查找匹配 see :help /\%>c
-  let l:endidx = matchend(l:line, l:expr)+1
+  echo "searchidx: ".l:searchidx
+  let l:expr = '\%>'.l:searchidx.'c'.l:cword.'\s*' " \%>23c表a示从第23列往后开始查找匹配 see :help /\%>c
+  echo "expr: ".l:expr
+  let l:endidx = matchend(l:line, l:expr)
   " 到句尾则正常跳转
-  if l:endidx > len(l:line)
+  echo "endidx: ".l:endidx
+  if l:endidx == len(l:line)
     normal! w
     return
   endif
   " 否则移动光标后判断下一个word的长度
   normal! w
   " call cursor('.', l:endidx)
-  echo l:endidx
   let l:cword = expand('<cword>')
+  echo "cword: ".l:cword
   " 下个单词词长超过1则不需要继续操作
-  if len(l:cword) > 1
+  if strchars(l:cword) > 1
     return
   endif
   let l:col = col('.')
   let l:endidx = matchend(l:line, '\%'.l:col.'c'.l:cword.'\s*')+1 " 因为光标肯定在词首所以不需要减去单词长度
+  echo "endidx: ".l:endidx
   normal! w
 endfunc
 " testing map
 noremap <leader>w w
-noremap <buffer> <silent> w :<C-U>call <SID>SkipSingleCharacter('w')<CR>
+noremap <silent> w :<C-U>call <SID>SkipSingleCharacter('w')<CR>
 
 
 " TODO
@@ -95,3 +111,4 @@ noremap <buffer> <silent> w :<C-U>call <SID>SkipSingleCharacter('w')<CR>
 " 英文字符abc 符号:,# 数字0-9 空格\s
 " 不同类型属于不同group？搞不明白.. :help iskeyword
 " 旧想法：只要满足 ABBBBX 或者 AAAABX 模式 自动跳到X位置，不同字母表示不同类型
+" 最新想法：先触发normal! w，然后根据光标移动划过的内容判断是否需要再进行一次normal! w
