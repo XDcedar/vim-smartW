@@ -56,32 +56,32 @@
 " endfunc
 
 function! s:SkipSingleCharacter(originalMapping) abort
-  " echo 'start'
+  " TODO
+  " 注意如果光标在符号上，则expand('<cword>')返回的是光标右侧的第一个word。要处理这种情况。
   let l:line = getline('.')
   let l:col = col('.')
-  let l:expr_prefix = '\%'.l:col.'c' " \%23c表a示从第23列开始匹配 see :help \%c
-  let l:currentchar = matchstr(l:line, l:expr_prefix.'.') " see https://stackoverflow.com/questions/23323747/
-  " case 1: cursor char is keyword and ascii char ([0-9A-Za-z_])
-  if l:currentchar =~# '\k' && l:currentchar =~# '\w' " see :help \K and :help \w
-    " echo 'is keyword'
-    " \v表示very magic模式(基本所有特殊符号默认为特殊含义)
-    " {-1,} 表示匹配至少1个但越少越好，见 :help /\{-
-    " (....)@! 是负向零宽断言(见:help /\@!)，仅判断位置而不记入匹配字符，所以后面要跟'.'来匹配零宽断言命中的字符
-    " expr 含义为 从当前位置开始匹配，匹配模式为:(多个keyword)(下1个字符不是keywkeyword)(再下1个字符是keyword)
-    let l:expr = l:expr_prefix.'\v\K{-1,}(\K)@!.(\K|\s)'
-  elseif l:currentchar !~# '\K'
-    " echo 'is not keyword'
-    " 注意中间的 '\k' 为小写，见 :help \k
-    let l:expr = l:expr_prefix.'\v(\K{-1,})@!.\k(\K)@!.'
-  endif
-  " echo l:expr
-  let l:endidx = matchend(l:line, l:expr)
-  if l:endidx >= 0
-    call cursor('.', l:endidx)
-    echo 'matched'
+  let l:cword = expand('<cword>') " see :help expand()
+  " 搜索位置为光标所在位置左移一个<cword>长度，这样光标即使在word的正中间，使用 \%>c 也能匹配光标所在word。
+  " 简单证明可知不必担心光标左移太多（比如aaa.aaa匹配到了左边那个aaa，或者诸如abababab的长回文匹配到了某个子串）
+  let l:searchidx = max([l:col-len(l:cword), 0])
+  let l:expr = '\%>'.l:searchidx.'c'.l:cword " \%>23c表a示从第23列往后开始查找匹配 see :help /\%>c
+  let l:endidx = matchend(l:line, l:expr)+1
+  " 到句尾则正常跳转
+  if l:endidx > len(l:line)
+    normal! w
     return
   endif
-  " use '!' to not use mappings. see :help normal
+  " 否则移动光标后判断下一个word的长度
+  normal! w
+  " call cursor('.', l:endidx)
+  echo l:endidx
+  let l:cword = expand('<cword>')
+  " 下个单词词长超过1则不需要继续操作
+  if len(l:cword) > 1
+    return
+  endif
+  let l:col = col('.')
+  let l:endidx = matchend(l:line, '\%'.l:col.'c'.l:cword.'\s*')+1 " 因为光标肯定在词首所以不需要减去单词长度
   normal! w
 endfunc
 " testing map
@@ -94,21 +94,4 @@ noremap <buffer> <silent> w :<C-U>call <SID>SkipSingleCharacter('w')<CR>
 " 多种类型：
 " 英文字符abc 符号:,# 数字0-9 空格\s
 " 不同类型属于不同group？搞不明白.. :help iskeyword
-" 新想法：只要满足 ABBBBX 或者 AAAABX 模式 自动跳到X位置，不同字母表示不同类型
-" 最新想法：
-" let l:cword = expand('<cword>')
-" let l:endidx = matchend(l:line, '\%'.max([l:col-len(l:cword), 0]).'c'.l:cword)
-" " 到句尾则正常跳转
-" if l:endidx == len(l:line)
-"   normal! w
-"   return
-" endif
-" cursor('.', l:endidx)
-" l:cword = expand('<cword>')
-" " 下个单词词长超过1则不需要继续操作
-" if len(l:cword) > 1
-"   return
-" endif
-" l:col = col('.')
-" let l:endidx = matchend(l:line, '\%'.l:col.'c'.l:cword.'\s*') " 因为光标肯定在词首所以不需要减去单词长度
-" cursor('.', l:endidx)
+" 旧想法：只要满足 ABBBBX 或者 AAAABX 模式 自动跳到X位置，不同字母表示不同类型
