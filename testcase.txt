@@ -38,6 +38,8 @@ a b c d
 
 iskeyword=@,48-57,_,192-255
 C:\Users\admin\AppData\Local\nvim\myconfig\keymappings.vim
+https://example.com/show-examples-about-this
 if l:endidx = len(l:line) | normal! w | endif
 let l:expr = l:expr_prefix.'\v\K{-1,}(\K)@!.(\K|\s)'
+echo matchstr(getline('.'),'\%'.col('.').'c.')
 echo matchend(getline('.'), '\%>'.max([col('.')-len(expand('<cword>')), 0]).'c'.expand('<cword>'))
