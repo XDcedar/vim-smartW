@@ -26,13 +26,13 @@ function! s:SkipSingleCharacter(originalMapping) abort
   " 光标划过的是 word with trailing space 或者单纯的空格，则无需操作
   " 注意 \%Nc 表示恰好从第N列开始匹配
   " 补充：
-  " 希望 \%>Nc 匹配第x列及之后时 N取x-1，因为它指定的是大于第N列的字符(而非大于等于)。
-  " 希望 \%<Mc 匹配第x列及之前时 M取x+1，因为它匹配的是小于第M列的字符(而非小于等于)。
+  " 希望 \%>Nc 匹配第x列及之后时 N要取x-1，因为它指定的是大于第N列的字符(而非大于等于)。
+  " 希望 \%<Mc 匹配第x列及之前时 M要取x+1，因为它匹配的是小于第M列的字符(而非小于等于)。
   " 在搜索时(比如调用match函数时)，末尾的 \%<Mc 或者 \%Nc 所匹配的字符并不计入结果
   " 所以此时 \%>Nc 与 \%<Mc 囊括的匹配区域相当于左闭右开区间 [N+1, M-1)
   let l:prevword = matchstr(l:line, '\%'.l:startcol.'c' . '.\+' . '\%'.l:stopcol.'c')
   "echo 'startcol: '.l:startcol.' endcol: '.l:stopcol.' matchstr: '.l:prevword
-  if l:prevword =~# '^\S*\s\+$'
+  if l:prevword =~# '^\v\S*(\s|　)+$' " 全角空格(Full-Width Space)也要匹配
     return
   endif
   " 如果光标划过的word只有一个字符，则再向前移动一个word
