@@ -1,11 +1,9 @@
-" 设计初衷：让经常出现在句中的(,":等不再像一面挡住所有移动操作的铁壁
 " 整体思路：先触发normal! w，然后根据光标移动划过的内容和所在的位置判断是否需要再进行一次normal! w
-function! s:SkipSingleCharacter(originalMapping) abort
+function! smartW#smartW() abort
   let l:line = getline('.')
   let l:startlnum = line('.')
   let l:startcol = col('.')
   normal! w
-  " execute 'normal! '.a:originalMapping
   let l:endlnum = line('.')
   " 跨行移动无需操作
   if l:startlnum != l:endlnum
@@ -36,11 +34,12 @@ function! s:SkipSingleCharacter(originalMapping) abort
     return
   endif
   " 如果光标划过的word只有一个字符，则再向前移动一个word
-  if l:prevword =~# '^.$'
-    "echo 'one char word'
-    normal! w
-    return
-  endif
+  " 要考虑一下到底要不要这么做。暂时不加上这一条。
+  "if l:prevword =~# '^.$'
+  "  "echo 'one char word'
+  "  normal! w
+  "  return
+  "endif
   let l:cword = expand('<cword>') " see :help expand()
   "echo 'cword: '.l:cword
   " 如果光标不在word上，则expand('<cword>')返回的是光标右侧的首个word。故要分情况处理
@@ -64,6 +63,3 @@ function! s:SkipSingleCharacter(originalMapping) abort
     endif
   endif
 endfunc
-" testing map
-" nnoremap <leader>w w
-nnoremap <silent> w :<C-U>call <SID>SkipSingleCharacter('w')<CR>
