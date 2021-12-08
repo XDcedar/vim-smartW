@@ -12,13 +12,19 @@ function! smartW#smartW() abort
   endif
   let l:stopcol = col('.')
   let l:currentchar = matchstr(l:line, '\%'.l:stopcol.'c.') " see https://stackoverflow.com/questions/23323747/
+  let l:nextcol = l:stopcol + len(l:currentchar)
   "echo 'move to char: '.l:currentchar
   " 光标在最后一个字符上，无需操作。
   " 使用 + len() 用于处理多字节字符
   " 使用 >= 而非 == 是为了处理空行
   " 可用这个命令检验-> :echo [col('.'), col('$')]
-  if l:stopcol + len(l:currentchar) >= col('$')
+  if l:nextcol >= col('$')
     "echo 'end of line'
+    return
+  endif
+  " 如果光标后面只有'\s'(空格)，无需操作
+  if match(l:line, '\%'.l:nextcol.'c\s\+$') >= 0
+    "echo 'at the last non-whitespace character'
     return
   endif
   " 光标划过的是 word with trailing space 或者单纯的空格，则无需操作
