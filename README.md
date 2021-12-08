@@ -38,9 +38,9 @@ In most modern apps, when typing `<C-Left>` or `<C-Right>` in text-edit area, th
 For example, in Chrome address bar:
 ```
 text       https://example.com/show-examples-about-this?
-cursor     |------>|------>|-->|--->|------->|---->|--->|-> to the end of line
-keystrokes CTRL+→  CTRL+→  C+→ C+→  CTRL+→   C+→   C+→  C+→
-(8 keystrokes)
+cursor     |------>|------>|-->|--->|------->|---->|--->|to the end of line
+keystrokes CTRL+→  CTRL+→  C+→ C+→  CTRL+→   C+→   C+→ 
+(7 keystrokes)
 ```
 
 While in (n)vim this would happen when pressing `w`:

@@ -15,8 +15,8 @@ function! smartW#smartW() abort
   let l:nextcol = l:stopcol + len(l:currentchar)
   "echo 'move to char: '.l:currentchar
   " 光标在最后一个字符上，无需操作。
-  " 使用 + len() 用于处理多字节字符
-  " 使用 >= 而非 == 是为了处理空行
+  " 使用 + len() 处理多字节字符
+  " 使用 >= 而非 == 是为了兼容空行
   " 可用这个命令检验-> :echo [col('.'), col('$')]
   if l:nextcol >= col('$')
     "echo 'end of line'
