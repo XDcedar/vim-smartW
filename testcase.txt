@@ -43,3 +43,6 @@ if l:endidx = len(l:line) | normal! w | endif
 let l:expr = l:expr_prefix.'\v\K{-1,}(\K)@!.(\K|\s)'
 echo matchstr(getline('.'),'\%'.col('.').'c.')
 echo matchend(getline('.'), '\%>'.max([col('.')-len(expand('<cword>')), 0]).'c'.expand('<cword>'))
+
+randomcharactershere.）**
+(第二个Word包含两个星号的句子，注意escape掉它们)

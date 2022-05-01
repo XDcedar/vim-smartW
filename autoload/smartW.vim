@@ -1,4 +1,5 @@
 " 整体思路：先触发normal! w，然后根据光标移动划过的内容和所在的位置判断是否需要再进行一次normal! w
+
 function! smartW#smartW() abort
   let l:line = getline('.')
   let l:startlnum = line('.')
@@ -49,8 +50,9 @@ function! smartW#smartW() abort
   let l:cword = expand('<cword>') " see :help expand()
   "echo 'cword: '.l:cword
   " 如果光标不在word上，则expand('<cword>')返回的是光标右侧的首个word。故要分情况处理
-  " 注意 match() 返回的下标从0开始计算，这与从1开始的 col() 不同，所以 +1 以使下标统一
-  let l:nextcol = match(l:line, '\%>'.(l:stopcol-1).'c' . l:cword) + 1
+  " 注意 match() 返回的下标从0开始计算，这与从1开始的 col() 不同，所以 +1 以使下标统一。
+  " 另外，还要escape掉特殊字符比如'*'，参见 https://stackoverflow.com/questions/11311431/how-to-escape-search-patterns-or-regular-expressions-in-vimscript
+  let l:nextcol = match(l:line, '\V\%>'.(l:stopcol-1).'c' . escape(l:cword, '\')) + 1
   if l:nextcol == l:stopcol
     " 判断cword长度，长度小于等于1的话，再向前移动一个word
     if strchars(l:cword) <= 1
