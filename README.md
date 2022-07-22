@@ -13,7 +13,7 @@ For [vim-plug](https://github.com/junegunn/vim-plug): `Plug 'XDcedar/vim-smartW'
 Add this to your .vimrc or init.vim
 ```vim
 nmap <silent> w <Plug>(smartW)
-" if you want to keep built-in w motion, uncomment this line
+" If you want to keep built-in w motion, uncomment this line
 "nmap <silent> <leader>w <Plug>(smartW-builtin-w)
 ```
 
@@ -27,7 +27,7 @@ without it        |--->|->|----->||->||-->||------>||--->||-->|-> to next line
 ```
 Notice the cursor acts normally, but skips one-character words (except for the one at the end of line, i.e. the word `?`).
 
-**Plugin only affects normal mode.**
+**This plugin only affects normal mode.**
 
 ## Why this plugin
 
@@ -71,10 +71,10 @@ but the cursor of modern apps would jump straight forward to `col`, skipping the
 which forces us to type lots of `←` to move back.
 
 The built-in method in (n)vim does not do it well either.
-In my opinion, `w` should always do something `hjkl` cannot,
-but notice the awkward double `w` keystrokes in (n)vim from the examples above,
+Notice the awkward double `w` keystrokes in (n)vim from the examples above,
 the first keystroke just moves cursor one character forward.
-It seems like single-character words turn into an impassable barrier that almost all horizontal movements have to stop there.
+In my opinion, `w` should always do something `hjkl` cannot,
+but now it seems like single-character word turns into an impassable barrier that almost all horizontal movements have to stop there.
 
 To compromise these two circumstances, I come up with a simple solution:
 Treat one-character words like `/`, `-`, `s`, `g` (including `[a-zA-Z0-9]` etc) as the trailing part of the preceding word and skip it when moving,
@@ -82,7 +82,7 @@ but treat longer words as normal words and move forward as usual.
 Then we could reduce the number of keystrokes and move faster, but not too fast.
 If you want to edit that single character, just type `wh` instead of `w`, or `el` if you wish.
 
-## implementation
+## Implementation
 The implementation is simple.
 After pressing `w`, plugin will execute `normal! w`, then check whether the cursor is on a one-character word, if true, execute `normal! w` again.
 
