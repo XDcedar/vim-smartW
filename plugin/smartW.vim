@@ -8,7 +8,7 @@ if exists('g:loaded_smartW_plugin')
 endif
 
 
-nnoremap <silent> <Plug>(smartW)  :<C-u>call smartW#smartW()<CR>
+nnoremap <silent> <Plug>(smartW)  :<C-u>call smartW#smartW_with_count(v:count1)<CR>
 nnoremap <Plug>(smartW-builtin-w)  w
 
 

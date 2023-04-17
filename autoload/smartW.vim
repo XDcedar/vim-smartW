@@ -71,3 +71,9 @@ function! smartW#smartW() abort
     endif
   endif
 endfunc
+
+function! smartW#smartW_with_count(count) abort
+  for l:i in range(a:count)   " do your mapping but *append* to register 's'
+    call smartW#smartW()
+  endfor
+endfunc
